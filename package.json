@@ -1,0 +1,47 @@
+{
+  "name": "user-management",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "check-types": "tsc --pretty --noEmit",
+    "check-format": "prettier --check .",
+    "build:watch": "tsc --watch",
+    "build:run": "nodemon build/app.js",
+    "start:dev": "npm run build && cross-env NODE_ENV=development concurrently \"npm run build:watch\" \"npm run build:run\"",
+    "start:prod": "cross-env NODE_ENV=production node build/app.js",
+    "start": "cross-env NODE_ENV=development node build/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.5.0",
+    "dotenv-flow": "^4.1.0",
+    "express": "^5.1.0",
+    "morgan": "^1.10.0",
+    "reflect-metadata": "^0.2.2",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "@types/express": "^5.0.2",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.15.21",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.27.0",
+    "globals": "^16.1.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1",
+    "zod": "^3.25.20"
+  }
+}
