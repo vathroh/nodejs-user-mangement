@@ -1,26 +1,47 @@
-import express, { Application, Handler, RequestHandler } from "express";
+import express, {
+  Application,
+  Handler,
+  NextFunction,
+  Request,
+  RequestHandler,
+  Response,
+} from "express";
 import path from "path";
-import { env } from "./config";
-import morgan from "morgan";
 import logger from "./logger";
 import MetadataKeys from "./types/metadata-keys";
 import { IRouter } from "./decorators/routeDecorators/handler.decorator";
+import { loggerHandling } from "./lib/logger/app";
+import { ApiResponse, SystemData } from "./lib/response";
+import ApiError from "./lib/errors/api-error";
+
+export interface IControllerInstance {
+  [key: string]: Handler;
+}
+
+export interface IControllerConstructor {
+  new (): IControllerInstance;
+}
 
 class ExpressApplication {
   private app: Application;
 
+  get expressApp(): Application {
+    return this.app;
+  }
+
   constructor(
     private port: string | number,
     private middlewares: RequestHandler[],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private controllers: any[]
+    private controllers: Array<new () => unknown>
   ) {
     this.app = express();
 
+    this.setupLogger();
     this.setupMiddlewares(middlewares);
     this.setupRoutes(controllers);
     this.configureAssets();
-    this.setupLogger();
+    this.setupNotFoundRoute();
+    this.setupErrorHandling();
   }
 
   private setupMiddlewares(middlewaresArr: RequestHandler[]) {
@@ -29,13 +50,12 @@ class ExpressApplication {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private setupRoutes(controllers: any[]) {
+  private setupRoutes(controllers: Array<new () => unknown>) {
+    console.log("Setting up routes...");
     const info: Array<{ api: string; handler: string }> = [];
 
     controllers.forEach((Controller) => {
-      const controllerInstance: { [handleName: string]: Handler } =
-        new Controller();
+      const controllerInstance = new Controller() as Record<string, Handler>;
 
       const basePath: string = Reflect.getMetadata(
         MetadataKeys.BASE_PATH,
@@ -79,10 +99,39 @@ class ExpressApplication {
     this.app.use(express.static(path.join(__dirname, "../public")));
   }
 
+  private setupErrorHandling() {
+    this.app.use(
+      (
+        err: ApiError,
+        req: Request,
+        res: Response,
+        _next: NextFunction
+      ): void => {
+        void _next;
+
+        const statusCode = err.statusCode || 500;
+        const message = err.message || "Internal Server Error";
+
+        new ApiResponse()
+          .setSystem({})
+          .setMetadata({})
+          .setData(null)
+          .setError(statusCode, message, "internal server error")
+          .send(res);
+      }
+    );
+  }
+
+  private setupNotFoundRoute() {
+    this.app.use((req: Request, res: Response) => {
+      logger.warn(`Route not found: ${req.path}`);
+      const data: SystemData = { status: 404, message: "Route not found" };
+      new ApiResponse().setSystem(data).setData(null).send(res);
+    });
+  }
+
   private setupLogger() {
-    if (env.NODE_ENV === "development") {
-      this.app.use(morgan("dev"));
-    }
+    this.app.use(loggerHandling);
   }
 
   public start() {

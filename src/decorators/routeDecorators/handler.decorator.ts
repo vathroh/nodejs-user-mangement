@@ -3,7 +3,7 @@ import MetadataKeys from "../../types/metadata-keys";
 
 export enum Methods {
   Get = "get",
-  POST = "post",
+  post = "post",
   PUT = "put",
   DELETE = "delete",
 }
@@ -39,6 +39,6 @@ const decoratorFactory =
   };
 
 export const Get = decoratorFactory(Methods.Get);
-export const Post = decoratorFactory(Methods.POST);
+export const Post = decoratorFactory(Methods.post);
 export const Put = decoratorFactory(Methods.PUT);
 export const Delete = decoratorFactory(Methods.DELETE);

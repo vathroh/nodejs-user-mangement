@@ -10,11 +10,13 @@ const logger_1 = __importDefault(require("./logger"));
 const dotenv_1 = __importDefault(require("dotenv"));
 require("reflect-metadata");
 const user_controller_1 = __importDefault(require("./api/user/user.controller"));
+const auth_1 = __importDefault(require("./api/auth/controllers/auth"));
 dotenv_1.default.config({ path: `${process.cwd()}/.env` });
 const app = new bootstrapper_1.default(config_1.env.PORT, [
     express_1.default.json({ limit: "10kb" }),
     express_1.default.urlencoded({ extended: true, limit: "10kb" }),
-], [user_controller_1.default]);
+], [user_controller_1.default, auth_1.default]);
+console.log("ttt");
 const server = app.start();
 logger_1.default.info(config_1.env.NODE_ENV);
 process.on("SIGTERM", () => {

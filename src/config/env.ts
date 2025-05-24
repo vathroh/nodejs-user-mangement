@@ -7,7 +7,12 @@ DotenvFlow.config();
 const envSchema = z.object({
   PORT: z.string().default("3000"),
   NODE_ENV: z.enum(["development", "production", "test"]),
-  // DATABASE_URL: z.string().url(),
+  DB_HOST: z.string().default("localhost"),
+  DB_PORT: z.string().default("5432"),
+  DB_USER: z.string().default("fathur"),
+  DB_PASSWORD: z.string().default("qwerty123"),
+  DB_NAME: z.string().default("users_management"),
+  JWT_SECRET: z.string().default("your-secret-key"),
 });
 
 const parsed = envSchema.safeParse(process.env);

@@ -2,11 +2,10 @@ import ExpressApplication from "./bootstrapper";
 import { env } from "./config";
 import express from "express";
 import logger from "./logger";
-import dotenv from "dotenv";
 import "reflect-metadata";
 import UserController from "./api/user/user.controller";
-
-dotenv.config({ path: `${process.cwd()}/.env` });
+import AuthController from "./api/auth/controllers/auth";
+import corsMiddleware from "./middlewares/cors";
 
 const app = new ExpressApplication(
   env.PORT,
@@ -14,12 +13,12 @@ const app = new ExpressApplication(
     express.json({ limit: "10kb" }),
     express.urlencoded({ extended: true, limit: "10kb" }),
   ],
-  [UserController]
+  [UserController, AuthController]
 );
 
-const server = app.start();
+app.expressApp.use(corsMiddleware);
 
-logger.info(env.NODE_ENV);
+const server = app.start();
 
 process.on("SIGTERM", () => {
   logger.warn("SIGTERM RECEIVED!");
