@@ -2,9 +2,11 @@ services:
   app:
     build: .
     ports:
-      - "4321:4321"
+      - ${PORT}:${PORT}
+    env_file:
+      - ${ENV_FILE}
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
+      - NODE_ENV=${NODE_ENV}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
