@@ -1,18 +1,17 @@
-FROM node:16
+FROM node:18
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN npm install
 
 ENV NODE_ENV=development
+RUN npm install
 
 COPY . .
 
-# Copy file mapping dan entrypoint
-COPY start-scripts.env docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN npx tsup src/app.ts --out-dir dist --format cjs
 
-USER node
+ENV NODE_ENV=production
+RUN npm prune --production
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["node", "dist/app.js"]

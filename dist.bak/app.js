@@ -6,19 +6,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bootstrapper_1 = __importDefault(require("./bootstrapper"));
 const config_1 = require("./config");
 const express_1 = __importDefault(require("express"));
-const logger_1 = __importDefault(require("./logger"));
-const dotenv_1 = __importDefault(require("dotenv"));
+const logger_1 = __importDefault(require("@root/logger"));
 require("reflect-metadata");
 const user_controller_1 = __importDefault(require("./api/user/user.controller"));
 const auth_1 = __importDefault(require("./api/auth/controllers/auth"));
-dotenv_1.default.config({ path: `${process.cwd()}/.env` });
+const cors_1 = __importDefault(require("@middlewares/cors"));
 const app = new bootstrapper_1.default(config_1.env.PORT, [
     express_1.default.json({ limit: "10kb" }),
     express_1.default.urlencoded({ extended: true, limit: "10kb" }),
 ], [user_controller_1.default, auth_1.default]);
-console.log("ttt");
+app.expressApp.use(cors_1.default);
 const server = app.start();
-logger_1.default.info(config_1.env.NODE_ENV);
 process.on("SIGTERM", () => {
     logger_1.default.warn("SIGTERM RECEIVED!");
     server.close(() => {

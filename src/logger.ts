@@ -5,7 +5,7 @@ const { timestamp, combine, printf, errors } = format;
 function logger() {
   const logFormat = printf(
     ({ level, message, timestamp, stack }) =>
-      `${timestamp} ${level}: ${stack || message}`
+      `${timestamp} ${level}: ${stack || message}`,
   );
 
   return createLogger({
@@ -13,7 +13,7 @@ function logger() {
       format.colorize(),
       timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
       errors({ stack: true }),
-      logFormat
+      logFormat,
     ),
     transports: [new transports.Console()],
   });

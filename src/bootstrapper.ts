@@ -9,10 +9,10 @@ import express, {
 import path from "path";
 import logger from "./logger";
 import MetadataKeys from "./types/metadata-keys";
-import { IRouter } from "./decorators/routeDecorators/handler.decorator";
-import { loggerHandling } from "./lib/logger/app";
-import { ApiResponse, SystemData } from "./lib/response";
-import ApiError from "./lib/errors/api-error";
+import { IRouter } from "@decorators/routeDecorators/handler.decorator";
+import { loggerHandling } from "@lib/logger/app";
+import { ApiResponse, SystemData } from "@lib/response";
+import ApiError from "@lib/errors/api-error";
 
 export interface IControllerInstance {
   [key: string]: Handler;

@@ -1,11 +1,11 @@
 import ExpressApplication from "./bootstrapper";
 import { env } from "./config";
 import express from "express";
-import logger from "./logger";
+import logger from "@root/logger";
 import "reflect-metadata";
-import UserController from "./api/user/user.controller";
-import AuthController from "./api/auth/controllers/auth";
-import corsMiddleware from "./middlewares/cors";
+import UserController from "@api/user/user.controller";
+import AuthController from "@api/auth/controllers/auth";
+import corsMiddleware from "@middlewares/cors";
 
 const app = new ExpressApplication(
   env.PORT,

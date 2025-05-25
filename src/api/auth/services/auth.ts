@@ -8,16 +8,12 @@ import ValidationError from "../../../lib/errors/validation-error";
 import errorsToFlatString from "../../../lib/errors/format/format-to-string";
 
 export default class AuthService {
-  public async getUser(req: Request, res: Response) {
-    res.send("Get User Route");
-  }
-
   public async register(req: Request, res: Response) {
     const validation = registerDto.safeParse(req.body);
     if (!validation.success) {
       console.error(validation.error.flatten().fieldErrors);
       throw new ValidationError(
-        errorsToFlatString(validation.error.flatten().fieldErrors)
+        errorsToFlatString(validation.error.flatten().fieldErrors),
       );
     }
 
@@ -26,7 +22,7 @@ export default class AuthService {
     try {
       const existingUser = await pool.query(
         "SELECT * FROM users WHERE email = $1",
-        [email]
+        [email],
       );
 
       console.log("existingUser", existingUser);
@@ -39,7 +35,7 @@ export default class AuthService {
 
       await pool.query(
         "INSERT INTO users (email, password_hash) VALUES ($1, $2)",
-        [email, hashedPassword]
+        [email, hashedPassword],
       );
 
       return res.status(201).json({ message: "User registered successfully" });

@@ -1,9 +1,9 @@
-#User Managemnt
+#User Managemnt#
 
-##How To Run
+##How To Run##
 **Production**
 
-> ENV_FILE=.env.production PORT=4500 dock
+> ENV_FILE=.env.production PORT=4500 NODE_ENV=production dock
 > er-compose up --build
 
 **Development**

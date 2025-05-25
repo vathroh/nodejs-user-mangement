@@ -3,17 +3,16 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "clean": "rimraf ./dist",
-    "build": "tsc",
+    "build": "tsup src/app.ts --out-dir dist --format cjs",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "check-types": "tsc --pretty --noEmit",
     "check-format": "prettier --check .",
     "build:watch": "tsc --watch",
-    "build:run": "nodemon dist/app.js",
+    "build:run": "nodemon --exec ts-node src/app.ts",
     "start:dev": "npm run build && cross-env NODE_ENV=development concurrently \"npm run build:watch\" \"npm run build:run\"",
     "start:prod": "cross-env NODE_ENV=production node dist/app.js",
-    "start": "cross-env NODE_ENV=development node dist/app.js"
+    "start": "cross-env NODE_ENV=development ts-node src/app.ts"
   },
   "keywords": [],
   "author": "",
@@ -48,6 +47,8 @@
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
     "zod": "^3.25.20"

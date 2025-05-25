@@ -27,7 +27,7 @@ export class ApiResponse<
     system: SystemData = {
       status: 200,
       message: "OK",
-    }
+    },
   ) {
     this.data = data ?? (null as TData);
     this.metadata = metadata ?? ({} as TMeta);
