@@ -4,8 +4,9 @@ import express from "express";
 import logger from "@root/logger";
 import "reflect-metadata";
 import UserController from "@api/user/user.controller";
-import AuthController from "@api/auth/controllers/auth";
+import AuthController from "@root/api/auth/controllers/controller-auth";
 import corsMiddleware from "@middlewares/cors";
+import Migration from "./database/migrations";
 
 const app = new ExpressApplication(
   env.PORT,
@@ -17,6 +18,8 @@ const app = new ExpressApplication(
 );
 
 app.expressApp.use(corsMiddleware);
+
+new Migration().up();
 
 const server = app.start();
 

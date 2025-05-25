@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import Controller from "../../../decorators/routeDecorators/controller.decorator";
-import { Post } from "../../../decorators/routeDecorators/handler.decorator";
-import UserService from "../services/auth";
+import Controller from "@decorators/routeDecorators/controller.decorator";
+import { Post } from "@decorators/routeDecorators/handler.decorator";
+import UserService from "@api/auth/services/service-auth";
 
 @Controller("/api/auth")
 export default class AuthController {

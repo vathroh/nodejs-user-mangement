@@ -14,4 +14,6 @@ RUN npx tsup src/app.ts --out-dir dist --format cjs
 ENV NODE_ENV=production
 RUN npm prune --production
 
-CMD ["node", "dist/app.js"]
+# ENTRYPOINT ["docker-entrypoint.sh"]
+# CMD ["npm", "run", "start:dev"]
+

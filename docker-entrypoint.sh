@@ -21,4 +21,5 @@ else
 fi
 
 echo "Starting with NODE_ENV=$NODE_ENV -> npm run $SCRIPT"
+echo "SCRIPT=$SCRIPT"
 exec npm run "$SCRIPT"

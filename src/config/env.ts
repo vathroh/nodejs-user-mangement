@@ -7,7 +7,7 @@ DotenvFlow.config();
 const envSchema = z.object({
   PORT: z.string().default("3000"),
   NODE_ENV: z.enum(["development", "production", "test"]),
-  DB_HOST: z.string().default("localhost"),
+  DB_HOST: z.string().default("host.docker.internal"),
   DB_PORT: z.string().default("5432"),
   DB_USER: z.string().default("fathur"),
   DB_PASSWORD: z.string().default("qwerty123"),

@@ -1,19 +1,18 @@
 import { Request, Response } from "express";
-import { pool } from "../../../config";
 import jwt from "jsonwebtoken";
-import registerDto from "../dto/register-dto";
+import registerDto from "@api/auth/services/dto/register-dto";
 import bcrypt from "bcrypt";
-import { env } from "../../../config/env";
-import ValidationError from "../../../lib/errors/validation-error";
-import errorsToFlatString from "../../../lib/errors/format/format-to-string";
+import ValidationError from "@lib/errors/validation-error";
+import errorsToFlatString from "@lib/errors/format/format-to-string";
+import { pool } from "@database/pool";
+import { env } from "@root/config";
 
 export default class AuthService {
   public async register(req: Request, res: Response) {
     const validation = registerDto.safeParse(req.body);
     if (!validation.success) {
-      console.error(validation.error.flatten().fieldErrors);
       throw new ValidationError(
-        errorsToFlatString(validation.error.flatten().fieldErrors),
+        errorsToFlatString(validation.error.flatten().fieldErrors)
       );
     }
 
@@ -22,7 +21,7 @@ export default class AuthService {
     try {
       const existingUser = await pool.query(
         "SELECT * FROM users WHERE email = $1",
-        [email],
+        [email]
       );
 
       console.log("existingUser", existingUser);
@@ -35,7 +34,7 @@ export default class AuthService {
 
       await pool.query(
         "INSERT INTO users (email, password_hash) VALUES ($1, $2)",
-        [email, hashedPassword],
+        [email, hashedPassword]
       );
 
       return res.status(201).json({ message: "User registered successfully" });
