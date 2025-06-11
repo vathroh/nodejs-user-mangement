@@ -1,17 +1,13 @@
 import { Response } from "express";
 
-// Ubah Data dan Metadata jadi generic
 export type SystemData = {
   status?: number;
   message?: string;
   error?: string;
-} & Record<string, unknown>; // ✅ Ganti any → unknown
+} & Record<string, unknown>;
 
 export class ApiResponse<
-  TData extends
-    | Record<string, unknown>
-    | Record<string, unknown>[]
-    | null = null,
+  TData extends Record<string, unknown> | Record<string, unknown>[] | null,
   TMeta extends Record<string, unknown> = Record<string, unknown>,
 > {
   private data: TData = null as TData;
@@ -25,9 +21,10 @@ export class ApiResponse<
     data?: TData,
     metadata?: TMeta,
     system: SystemData = {
+      success: true,
       status: 200,
       message: "OK",
-    },
+    }
   ) {
     this.data = data ?? (null as TData);
     this.metadata = metadata ?? ({} as TMeta);
@@ -49,6 +46,7 @@ export class ApiResponse<
     delete this.system.error;
     Object.assign(this.system, {
       ...data,
+      success: data.success ?? true,
       status: data.status ?? 200,
       message: data.message ?? "OK",
     });

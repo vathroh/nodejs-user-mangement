@@ -1,13 +1,29 @@
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import registerDto from "@api/auth/services/dto/register-dto";
-import bcrypt from "bcrypt";
-import ValidationError from "@lib/errors/validation-error";
+import { ValidationError, DataUniqueError } from "@lib/errors/index";
 import errorsToFlatString from "@lib/errors/format/format-to-string";
 import { pool } from "@database/pool";
 import { env } from "@root/config";
+import { ApiResponse } from "@root/lib/response";
+import getUserbyEmail from "../repositories/get-user-by-email";
+import createUser from "../repositories/create-user";
 
+/**
+ * AuthService
+ *
+ * This service handles authentication-related operations, such as user registration and login.
+ */
 export default class AuthService {
+  /**
+   * register
+   *
+   * Registers a new user.
+   * @param req The Express Request object.
+   * @param res The Express Response object.
+   * @returns A promise that resolves to the result of the registration operation.
+   */
   public async register(req: Request, res: Response) {
     const validation = registerDto.safeParse(req.body);
     if (!validation.success) {
@@ -18,36 +34,32 @@ export default class AuthService {
 
     const { email, password } = validation.data;
 
-    try {
-      const existingUser = await pool.query(
-        "SELECT * FROM users WHERE email = $1",
-        [email]
-      );
-
-      console.log("existingUser", existingUser);
-
-      if (existingUser.rows.length > 0) {
-        return res.status(400).json({ message: "Email already exists" });
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      await pool.query(
-        "INSERT INTO users (email, password_hash) VALUES ($1, $2)",
-        [email, hashedPassword]
-      );
-
-      return res.status(201).json({ message: "User registered successfully" });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: "Internal server error" });
+    const existingUser = await getUserbyEmail(email);
+    if (existingUser.rows.length > 0) {
+      throw new DataUniqueError("Email already in use.");
     }
+
+    const user = await createUser(email, password);
+
+    return new ApiResponse()
+      .setSystem({ success: true, message: "User registerd successfully." })
+      .setMetadata({})
+      .setData(user.rows[0])
+      .send(res);
   }
 
+  /**
+   * login
+   *
+   * Handles user login requests.
+   * @param req The Express Request object.
+   * @param res The Express Response object.
+   * @returns A promise that resolves to the result of the login operation.
+   */
   public async login(req: Request, res: Response) {
-    const { email, password } = req.body;
-
     try {
+      const { email, password } = req.body;
+
       const result = await pool.query("SELECT * FROM users WHERE email = $1", [
         email,
       ]);
@@ -58,7 +70,8 @@ export default class AuthService {
 
       const user = result.rows[0];
 
-      if (user.password_hash !== password) {
+      const passwordMatch = await bcrypt.compare(password, user.password_hash);
+      if (!passwordMatch) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 

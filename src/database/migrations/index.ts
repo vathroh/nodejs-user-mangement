@@ -3,7 +3,7 @@ import { up } from "./up";
 
 export default class Migration {
   public up() {
-    up()
+    return up()
       .then(() => {
         console.log("Migration completed!");
       })

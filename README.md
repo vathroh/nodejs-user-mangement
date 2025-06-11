@@ -1,6 +1,7 @@
-#User Managemnt#
+# User Management
 
-##How To Run##
+## How To Run
+
 **Production**
 
 > ENV_FILE=.env.production PORT=4500 NODE_ENV=production dock

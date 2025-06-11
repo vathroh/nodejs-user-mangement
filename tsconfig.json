@@ -126,6 +126,12 @@
     "transpileOnly": true,
     "require": ["tsconfig-paths/register"]
   },
-  "include": ["./src/**/*", "./test/**/*", "src"],
+  "include": [
+    "./src/**/*",
+    "./test/**/*",
+    "src",
+    "./__test__/**/*",
+    "./test/e2e/**/*"
+  ],
   "exclude": ["node_modules", "dist.bak"]
 }

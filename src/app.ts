@@ -17,9 +17,11 @@ const app = new ExpressApplication(
   [UserController, AuthController]
 );
 
+export { app };
+
 app.expressApp.use(corsMiddleware);
 
-new Migration().up();
+// new Migration().up();
 
 const server = app.start();
 

@@ -10,6 +10,6 @@ export const registerValidation =
         errors: result.error.flatten().fieldErrors,
       });
     }
-    req.body = result.data; // sudah bersih & valid
+    req.body = result.data;
     next();
   };
