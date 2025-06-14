@@ -6,6 +6,15 @@ export async function up() {
   const sqlDir = path.join(__dirname, "../sql");
 
   try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS migrations(
+        id SERIAL NOT NULL,
+        migration VARCHAR,
+        batch INT NOT NULL,
+        PRIMARY KEY(id)
+      );
+    `);
+
     const queries = await loadSqlQueries(sqlDir);
 
     for (const q of queries) {

@@ -7,6 +7,7 @@ import "reflect-metadata";
 import UserController from "@api/user/user.controller";
 import AuthController from "@root/api/auth/controllers/controller-auth";
 import corsMiddleware from "@middlewares/cors";
+import Migration from "./database/migrations";
 
 const app = new ExpressApplication(
   env.PORT,
@@ -20,6 +21,8 @@ const app = new ExpressApplication(
 export { app };
 
 app.expressApp.use(corsMiddleware);
+
+new Migration().up();
 
 app.expressApp.get("/swagger.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
