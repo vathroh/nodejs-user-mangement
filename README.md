@@ -11,3 +11,7 @@
 
 > ENV_FILE=.env.development PORT=4321 dock
 > er-compose up --build
+
+**API Documentation**
+
+> http://localhost:{{port}}/redoc.html

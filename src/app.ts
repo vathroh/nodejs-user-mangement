@@ -8,6 +8,7 @@ import UserController from "@api/user/user.controller";
 import AuthController from "@root/api/auth/controllers/controller-auth";
 import corsMiddleware from "@middlewares/cors";
 import Migration from "./database/migrations";
+import Seeder from "./database/seeder";
 
 const app = new ExpressApplication(
   env.PORT,
@@ -23,14 +24,13 @@ export { app };
 app.expressApp.use(corsMiddleware);
 
 new Migration().up();
+new Seeder().seed();
 
 app.expressApp.get("/swagger.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.sendFile(path.join(__dirname, "../public/swagger.json"));
 });
-
-// new Migration().up();
 
 const server = app.start();
 

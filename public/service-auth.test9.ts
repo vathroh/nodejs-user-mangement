@@ -63,8 +63,6 @@ describe("AuthService", () => {
         data: {
           email: "test@example.com",
           password: "password",
-          confirm_password: "password",
-          phone_number: "1234567890",
           role_code: "role.customer",
           auth_provider_code: "auth.email",
         },
@@ -85,13 +83,7 @@ describe("AuthService", () => {
       );
 
       expect(getUserbyEmail).toHaveBeenCalledWith("test@example.com");
-      expect(createUser).toHaveBeenCalledWith(
-        "test@example.com",
-        "password",
-        "1234567890",
-        "auth.email",
-        "role.customer"
-      );
+      expect(createUser).toHaveBeenCalledWith("test@example.com", "password");
       expect(ApiResponse).toHaveBeenCalled();
     });
 
@@ -111,14 +103,7 @@ describe("AuthService", () => {
     it("should throw a DataUniqueError if the email is already in use", async () => {
       (registerDto.safeParse as jest.Mock).mockReturnValue({
         success: true,
-        data: {
-          email: "test@example.com",
-          password: "password",
-          confirm_password: "password",
-          phone_number: "1234567890",
-          role_code: "role.customer",
-          auth_provider_code: "auth.email",
-        },
+        data: { email: "test@example.com", password: "password" },
       });
       (getUserbyEmail as jest.Mock).mockResolvedValue({
         rows: [{ id: 1, email: "test@example.com" }],
@@ -132,14 +117,7 @@ describe("AuthService", () => {
     it("should throw an error if createUser fails", async () => {
       (registerDto.safeParse as jest.Mock).mockReturnValue({
         success: true,
-        data: {
-          email: "test@example.com",
-          password: "password",
-          confirm_password: "password",
-          phone_number: "1234567890",
-          role_code: "role.customer",
-          auth_provider_code: "auth.email",
-        },
+        data: { email: "test@example.com", password: "password" },
       });
       (getUserbyEmail as jest.Mock).mockResolvedValue({ rows: [] });
       (createUser as jest.Mock).mockRejectedValue(
@@ -209,6 +187,21 @@ describe("AuthService", () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: "Invalid credentials",
       });
+    });
+
+    it("should return 500 if there is an internal server error", async () => {
+      (mockRequest as Partial<Request>).body = {
+        email: "test@example.com",
+        password: "password",
+      };
+      (pool.query as jest.Mock).mockRejectedValue(
+        new Error("Internal server error")
+      );
+
+      await authService.login(mockRequest as Request, mockResponse as Response);
+
+      expect(ApiResponse).toHaveBeenCalled();
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
     });
   });
 });

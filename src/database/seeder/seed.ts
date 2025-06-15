@@ -2,14 +2,14 @@ import { pool } from "@database/pool";
 import path from "path";
 import loadSqlQueries from "@database/utils/load-sql-queries";
 
-export async function up() {
+export async function seed() {
   const sqlDir = path.join(__dirname, "./sql");
 
   try {
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS migrations(
+      CREATE TABLE IF NOT EXISTS seeders(
         id SERIAL NOT NULL,
-        migration VARCHAR,
+        seeder VARCHAR,
         batch INT NOT NULL,
         PRIMARY KEY(id)
       );
@@ -19,23 +19,22 @@ export async function up() {
 
     for (const q of queries) {
       const result = await pool.query(
-        "SELECT * FROM migrations WHERE migration = $1",
+        "SELECT * FROM seeders WHERE seeder = $1",
         [q.table]
       );
       if (result.rows.length > 0) {
-        console.log(`Migration "${q.table}" already executed, skipping.`);
+        console.log(`Seeding "${q.table}" already executed, skipping.`);
       } else {
         await pool.query(q.query);
-        console.log(`${q.table} migration completed successfully!`);
+        console.log(`${q.table} seed completed successfully!`);
 
-        await pool.query(
-          "INSERT INTO migrations (migration, batch) VALUES ($1, 1)",
-          [q.table]
-        );
+        await pool.query("INSERT INTO seeders (seeder, batch) VALUES ($1, 1)", [
+          q.table,
+        ]);
       }
     }
   } catch (error) {
-    console.error("❌ Error running migration up:", error);
+    console.error("❌ Error running seeder:", error);
     throw error;
   }
 }

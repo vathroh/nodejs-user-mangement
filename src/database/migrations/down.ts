@@ -4,7 +4,7 @@ import loadSqlQueries from "../utils/load-sql-queries";
 
 export async function down() {
   try {
-    const sqlDir = path.join(__dirname, "../sql");
+    const sqlDir = path.join(__dirname, "./sql");
     const queries = await loadSqlQueries(sqlDir);
 
     for (const q of queries) {

@@ -8,12 +8,22 @@ describe("Auth E2E Tests", () => {
     // You might need to adjust the path based on your project structure
     await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(), 
+        email varchar(255) UNIQUE,
+        phone_number varchar(255),
+        password varchar(255) NOT NULL,
+        created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+        updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+        updated_by varchar(255),
+        created_by varchar(255),
+        is_deleted boolean DEFAULT false,
+        deleted_at timestamp with time zone,
+        deleted_by varchar(255),
+        created_src varchar(255),
+        updated_src varchar(255),
+        deleted_src varchar(255)
       );
+      TRUNCATE TABLE users;
     `);
   });
 
@@ -28,6 +38,9 @@ describe("Auth E2E Tests", () => {
       .send({
         email: "test@example.com",
         password: "Password123!",
+        confirm_password: "Password123!",
+        role_code: "role.custormer",
+        auth_provider_code: "auth.email",
       });
 
     expect(response.status).toBe(200);
@@ -45,6 +58,9 @@ describe("Auth E2E Tests", () => {
     await request(app.expressApp).post("/api/auth/register").send({
       email: "login@example.com",
       password: "Login123!",
+      confirm_password: "Login123!",
+      role_code: "role.customer",
+      auth_provider_code: "auth.email",
     });
 
     const response = await request(app.expressApp)

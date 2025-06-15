@@ -1,6 +1,6 @@
 const createUsersTableSql = `
-CREATE TABLE IF NOT EXISTS roles(
-    id SERIAL NOT NULL,
+CREATE TABLE IF NOT EXISTS auth_providers(
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(), 
     name varchar(255) NOT NULL,
     code varchar(255) NOT NULL,
     description varchar(255),
@@ -14,11 +14,10 @@ CREATE TABLE IF NOT EXISTS roles(
     is_deleted boolean DEFAULT false,
     deleted_at timestamp with time zone,
     deleted_src varchar(255),
-    deleted_by varchar(255),
-    PRIMARY KEY(id)
+    deleted_by varchar(255)
 );
-CREATE UNIQUE INDEX IF NOT EXISTS roles_name_key ON public.roles USING btree (name);
-CREATE UNIQUE INDEX IF NOT EXISTS roles_code_key ON public.roles USING btree (code);
+CREATE UNIQUE INDEX IF NOT EXISTS auth_providers_code_key ON public.auth_providers USING btree (code);
+CREATE UNIQUE INDEX IF NOT EXISTS auth_providers_name_key ON public.auth_providers USING btree (name);
 `;
 
 export default createUsersTableSql;

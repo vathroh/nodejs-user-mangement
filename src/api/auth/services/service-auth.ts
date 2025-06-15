@@ -32,14 +32,21 @@ export default class AuthService {
       );
     }
 
-    const { email, password } = validation.data;
+    const { email, password, phone_number, auth_provider_code, role_code } =
+      validation.data;
 
     const existingUser = await getUserbyEmail(email);
     if (existingUser.rows.length > 0) {
       throw new DataUniqueError("Email already in use.");
     }
 
-    const user = await createUser(email, password);
+    const user = await createUser(
+      email,
+      password,
+      phone_number,
+      auth_provider_code,
+      role_code
+    );
 
     return new ApiResponse()
       .setSystem({ success: true, message: "User registerd successfully." })
@@ -70,7 +77,10 @@ export default class AuthService {
 
       const user = result.rows[0];
 
-      const passwordMatch = await bcrypt.compare(password, user.password_hash);
+      console.log("Provided password:", password);
+      console.log("Hashed password:", user.password);
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      console.log("Password match:", passwordMatch);
       if (!passwordMatch) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
@@ -82,7 +92,10 @@ export default class AuthService {
       return res.json({ token });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: "Internal server error" });
+      return new ApiResponse()
+        .setSystem({ success: false, message: "Internal server error" })
+        .setMetadata({})
+        .send(res);
     }
   }
 }
